@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ThemeProvider from "@/components/theme-provider";
+import LogoProvider from "@/components/logo-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,12 +14,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <ThemeProvider>
+        <LogoProvider>
+          <body className={inter.className}>
+            {children}
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js" />
+          </body>
+        </LogoProvider>
+      </ThemeProvider>
     </html>
   );
 }
