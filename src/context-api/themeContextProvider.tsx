@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import WebFont from 'webfontloader';
@@ -12,22 +12,28 @@ type ThemeContextValue = {
 
 // Create the theme context with the correct type
 export const ThemeContext = createContext<ThemeContextValue>({
-  theme: { color: 'purple' },
+  theme: { color: '#272332' },
   updateTheme: () => {},
 });
 
-export default function ThemeProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const [theme, setTheme] = useState({ color: '#ffffff' });
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [theme, setTheme] = useState<{ color: string }>({ color: '#272332' });
 
-  // Memoize the updateTheme function to avoid unnecessary re-renders
+  // Function to update theme and store it in local storage
   const updateTheme = useCallback((newColor: string) => {
     setTheme({ color: newColor });
-  }, [theme]);
+    localStorage.setItem('themeColor', newColor);
+  }, []);
 
+  // Load theme from local storage on initial render
+  useEffect(() => {
+    const savedThemeColor = localStorage.getItem('themeColor');
+    if (savedThemeColor) {
+      setTheme({ color: savedThemeColor });
+    }
+  }, []);
+
+  // Load Google Fonts
   useEffect(() => {
     WebFont.load({
       google: {
@@ -44,16 +50,12 @@ export default function ThemeProvider({
       {children}
     </ThemeContext.Provider>
   );
-}
+};
 
-export function useTheme() {
+export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
-
   if (!context) {
-    throw new Error(
-      'useTheme context should be used within a ThemeContextProvider'
-    );
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
-
   return context;
-}
+};

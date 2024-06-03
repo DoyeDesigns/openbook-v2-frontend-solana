@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 // Define the type for the LogoContextValue
 type LogoContextValue = {
@@ -14,16 +14,21 @@ export const LogoContext = createContext<LogoContextValue>({
   updateLogo: () => {},
 });
 
-export default function LogoProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const LogoProvider = ({ children }: { children: React.ReactNode }) => {
   const [logoUrl, setLogoUrl] = useState<string>('');
 
-  // Memoize the updateLogo function to avoid unnecessary re-renders
+  // Function to update logo and store it in local storage
   const updateLogo = useCallback((newLogoUrl: string) => {
     setLogoUrl(newLogoUrl);
+    localStorage.setItem('logoUrl', newLogoUrl);
+  }, []);
+
+  // Load logo from local storage on initial render
+  useEffect(() => {
+    const savedLogoUrl = localStorage.getItem('logoUrl');
+    if (savedLogoUrl) {
+      setLogoUrl(savedLogoUrl);
+    }
   }, []);
 
   // Memoize the context value to avoid unnecessary re-renders
@@ -34,16 +39,12 @@ export default function LogoProvider({
       {children}
     </LogoContext.Provider>
   );
-}
+};
 
-export function useLogo() {
+export const useLogo = (): LogoContextValue => {
   const context = useContext(LogoContext);
-
   if (!context) {
-    throw new Error(
-      'useLogo must be used within a LogoProvider'
-    );
+    throw new Error('useLogo must be used within a LogoProvider');
   }
-
   return context;
-}
+};

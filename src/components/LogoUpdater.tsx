@@ -1,5 +1,8 @@
+'use client'
+
 import React, { memo, useCallback } from 'react';
-import { useLogo } from './logo-provider';
+import { useLogo } from '../context-api/logoContextProvider';
+import PageSubTitle from './PageSubTitle';
 
 const LogoUpdater = () => {
   const { logoUrl, updateLogo } = useLogo();
@@ -16,9 +19,10 @@ const LogoUpdater = () => {
   }, [updateLogo]);
 
   return (
-    <div>
-      {logoUrl && <img src={logoUrl} alt="Logo" style={{ width: '100px', height: '100px' }} />}
-      <input type="file" accept="image/*" onChange={handleImageChange} />
+    <div className='flex flex-col justify-center item-center my-5'>
+      <PageSubTitle text='Change Site Logo' />
+      {logoUrl ? (<img src={logoUrl} alt="Logo" style={{ width: '100px', height: '100px' }} />) : <span>Choose logo Image from library</span>}
+      <input type="file" placeholder='Choose Logo Image' accept="image/*" className='my-5' onChange={handleImageChange} />
     </div>
   );
 };
